@@ -4,7 +4,7 @@ import java.util.concurrent.Semaphore;
 public class Filosofo implements Runnable {
 	
 	private Random numero = new Random();
-	private int prato = 5;
+	private int prato = 2;
 	private int id;
 	private Semaphore garfoEsquerdo;
 	private Semaphore garfoDireito;
@@ -21,27 +21,53 @@ public class Filosofo implements Runnable {
 		Thread.sleep(numero.nextInt(5000));
 	}
 	
-	private void pegarGarfoEsquerdo() throws InterruptedException {
-		if(garfoEsquerdo.availablePermits() == 0) {
-			System.out.println("Filósofo " + (id + 1) + " está ESPERANDO pelo garfo esquerdo...\n");
-			System.out.flush();
+	private void pegarGarfos() throws InterruptedException {
+		while(true) {
+			if(garfoEsquerdo.availablePermits() == 0) {
+				Thread.sleep(1000);
+				continue;
+			} else {
+				garfoEsquerdo.acquire();
+				System.out.println("Filósofo " + (id + 1) + " PEGOU o garfo esquerdo...\n");
+				System.out.flush();
+				
+				if(garfoDireito.availablePermits() == 0) {
+					garfoEsquerdo.release();
+					System.out.println("Filósofo " + (id + 1) + " DEVOLVEU o garfo esquerdo (direito indisponível)\n");
+					Thread.sleep(1000);
+					continue;
+				} else {
+					garfoDireito.acquire();
+					System.out.println("Filósofo " + (id + 1) + " PEGOU o garfo direito...\n");
+					System.out.flush();
+					return;
+				}
+			}
 		}
 		
-		garfoEsquerdo.acquire();
-		System.out.println("Filósofo " + (id + 1) + " PEGOU o garfo esquerdo...\n");
-		System.out.flush();
-	}
+    }
 	
-	private void pegarGarfoDireito() throws InterruptedException {
-		if(garfoDireito.availablePermits() == 0) {
-			System.out.println("Filósofo " + (id + 1) + " está ESPERANDO pelo garfo direito...\n");
-			System.out.flush();
-		}
-		
-		garfoDireito.acquire();
-		System.out.println("Filósofo " + (id + 1) + " PEGOU o garfo direito...\n");
-		System.out.flush();
-	}
+//	private void pegarGarfoEsquerdo() throws InterruptedException {
+//		if(garfoEsquerdo.availablePermits() == 0) {
+//			System.out.println("Filósofo " + (id + 1) + " está ESPERANDO pelo garfo esquerdo...\n");
+//			System.out.flush();
+//		}
+//		
+//		garfoEsquerdo.acquire();
+//		System.out.println("Filósofo " + (id + 1) + " PEGOU o garfo esquerdo...\n");
+//		System.out.flush();
+//	}
+//	
+//	private void pegarGarfoDireito() throws InterruptedException {
+//		if(garfoDireito.availablePermits() == 0) {
+//			System.out.println("Filósofo " + (id + 1) + " está ESPERANDO pelo garfo direito...\n");
+//			System.out.flush();
+//		}
+//		
+//		garfoDireito.acquire();
+//		System.out.println("Filósofo " + (id + 1) + " PEGOU o garfo direito...\n");
+//		System.out.flush();
+//	}
 	
 	private void comer() throws InterruptedException {
 		System.out.println("Filósofo " + (id + 1) + " está COMENDO...\n");
@@ -60,8 +86,7 @@ public class Filosofo implements Runnable {
 		try {
 			while(prato != 0) {
 				pensar();
-				pegarGarfoEsquerdo();
-				pegarGarfoDireito();
+				pegarGarfos();
 				comer();
 				devolverGarfos();
 			}
