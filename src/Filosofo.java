@@ -25,7 +25,6 @@ public class Filosofo implements Runnable {
 		while(true) {
 			if(garfoEsquerdo.availablePermits() == 0) {
 				Thread.sleep(1000);
-				continue;
 			} else {
 				garfoEsquerdo.acquire();
 				System.out.println("Filósofo " + (id + 1) + " PEGOU o garfo esquerdo...\n");
@@ -35,7 +34,6 @@ public class Filosofo implements Runnable {
 					garfoEsquerdo.release();
 					System.out.println("Filósofo " + (id + 1) + " DEVOLVEU o garfo esquerdo (direito indisponível)\n");
 					Thread.sleep(1000);
-					continue;
 				} else {
 					garfoDireito.acquire();
 					System.out.println("Filósofo " + (id + 1) + " PEGOU o garfo direito...\n");
@@ -46,28 +44,6 @@ public class Filosofo implements Runnable {
 		}
 		
     }
-	
-//	private void pegarGarfoEsquerdo() throws InterruptedException {
-//		if(garfoEsquerdo.availablePermits() == 0) {
-//			System.out.println("Filósofo " + (id + 1) + " está ESPERANDO pelo garfo esquerdo...\n");
-//			System.out.flush();
-//		}
-//		
-//		garfoEsquerdo.acquire();
-//		System.out.println("Filósofo " + (id + 1) + " PEGOU o garfo esquerdo...\n");
-//		System.out.flush();
-//	}
-//	
-//	private void pegarGarfoDireito() throws InterruptedException {
-//		if(garfoDireito.availablePermits() == 0) {
-//			System.out.println("Filósofo " + (id + 1) + " está ESPERANDO pelo garfo direito...\n");
-//			System.out.flush();
-//		}
-//		
-//		garfoDireito.acquire();
-//		System.out.println("Filósofo " + (id + 1) + " PEGOU o garfo direito...\n");
-//		System.out.flush();
-//	}
 	
 	private void comer() throws InterruptedException {
 		System.out.println("Filósofo " + (id + 1) + " está COMENDO...\n");
